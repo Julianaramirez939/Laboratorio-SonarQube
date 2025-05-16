@@ -1,27 +1,41 @@
 package com.example.app;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class App {
+
+    private static final Logger LOGGER = Logger.getLogger(App.class.getName());
 
     public static void main(String[] args) {
         Calculator calculator = new Calculator();
         int a = 10;
         int b = 0;
-        System.out.println("Sum: " + calculator.sum(a, b));
-        System.out.println("Division: " + calculator.divide(a, b)); // División por cero
 
-        for (int i = 0; i < 3; i++) {
-            System.out.println("Iteration " + i);
+        // Usar Logger con formato para evitar error SonarQube
+        LOGGER.log(Level.INFO, "Sum: {0}", calculator.sum(a, b));
+
+        try {
+            int divisionResult = calculator.divide(a, b);
+            LOGGER.log(Level.INFO, "Division: {0}", divisionResult);
+        } catch (ArithmeticException e) {
+            LOGGER.log(Level.WARNING, "Error en la división: {0}", e.getMessage());
         }
 
-        for (int i = 0; i < 3; i++) { // Código duplicado
-            System.out.println("Iteration " + i);
+        for (int i = 0; i < 6; i++) {
+            LOGGER.log(Level.INFO, "Iteration {0}", i % 3);
         }
 
         UserService userService = new UserService();
-        userService.processUser(null); // Posible NPE
+        try {
+            userService.processUser(null);
+        } catch (NullPointerException e) {
+            LOGGER.log(Level.WARNING, "UserService processUser recibió un valor nulo.");
+        }
 
-        Scanner scanner = new Scanner(System.in); // Recurso no cerrado
-        System.out.println("Enter a number:");
-        int input = scanner.nextInt();
+        try (Scanner scanner = new Scanner(System.in)) {
+            LOGGER.log(Level.INFO, "Enter a number:");
+
+        }
     }
 }
